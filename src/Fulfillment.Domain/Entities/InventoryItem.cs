@@ -27,12 +27,12 @@ public class InventoryItem : BaseEntity
 
     public IReadOnlyCollection<StockMovement> Movements => _movements.AsReadOnly();
 
-    public StockMovement ApplyAdjustment(int delta, MovementType type, string? reason, string performedByUserId)
+    public StockMovement ApplyAdjustment(int delta, MovementType type, string? reason, Guid performedByUserId)
     {
         if (delta == 0)
             throw new BusinessRuleViolationException("A stock adjustment must change the quantity.");
 
-        if (string.IsNullOrWhiteSpace(performedByUserId))
+        if (performedByUserId == Guid.Empty)
             throw new BusinessRuleViolationException("A stock adjustment must record the user who performed it.");
 
         reason = string.IsNullOrWhiteSpace(reason) ? null : reason.Trim();

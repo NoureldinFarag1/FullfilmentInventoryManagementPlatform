@@ -8,7 +8,7 @@ public class StockMovement
 
     internal StockMovement(Guid inventoryItemId, int delta,
         int quantityAfter, MovementType type, string? reason,
-        string performedByUserId)
+        Guid performedByUserId)
     {
         Id =  Guid.NewGuid();
         InventoryItemId = inventoryItemId;
@@ -26,7 +26,7 @@ public class StockMovement
     public int QuantityAfter { get; private set; }
     public MovementType Type { get; private set; }
     public string? Reason { get; private set; }
-    public string PerformedByUserId { get; private set; } = null!;
+    public Guid PerformedByUserId { get; private set; }
     public DateTime OccuredAt { get; private set; }
     
     public InventoryItem InventoryItem { get; private set; } = null!;
