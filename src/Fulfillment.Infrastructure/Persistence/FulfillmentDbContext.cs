@@ -1,4 +1,5 @@
 using System.Reflection;
+using Fulfillment.Application.Common.Interfaces;
 using Fulfillment.Domain.Entities;
 using Fulfillment.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fulfillment.Infrastructure.Persistence;
 
-public class FulfillmentDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+public class FulfillmentDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IApplicationDbContext
 {
     public FulfillmentDbContext(DbContextOptions<FulfillmentDbContext> options)
         : base(options) { }

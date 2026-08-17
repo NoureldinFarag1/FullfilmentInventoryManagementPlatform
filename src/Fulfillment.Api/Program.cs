@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using Fulfillment.Application;
 using Fulfillment.Application.Common.Interfaces;
 using Fulfillment.Infrastructure.Identity;
 using Fulfillment.Infrastructure.Persistence;
@@ -37,7 +38,7 @@ var jwtOptions = builder.Configuration
     .GetSection(JwtOptions.SectionName)
     .Get<JwtOptions>()!;
 
-// Authentication (must come after AddIdentity, which otherwise sets cookies as the default scheme)
+// Authentication
 builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -71,8 +72,16 @@ builder.Services.AddAuthorization(options =>
 });
 
 // Application services
-builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddApplication();
 
+builder.Services.AddScoped<IApplicationDbContext>(sp =>
+    sp.GetRequiredService<FulfillmentDbContext>());
+
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IIdentityService, IdentityService>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -117,5 +126,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    await DataSeeder.SeedAsync(scope.ServiceProvider);
+}
 
 app.Run();
