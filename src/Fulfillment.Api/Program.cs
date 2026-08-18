@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using Fulfillment.Api.Middleware;
 using Fulfillment.Application;
 using Fulfillment.Application.Common.Interfaces;
 using Fulfillment.Infrastructure.Identity;
@@ -113,6 +114,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
