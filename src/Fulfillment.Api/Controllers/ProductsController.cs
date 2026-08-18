@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Fulfillment.Api.Controllers;
 
 [ApiController]
-[Route("api/prodcuts")]
+[Route("api/products")]
 [Authorize]
 public class ProductsController : ControllerBase
 {

@@ -1,6 +1,7 @@
 using Fulfillment.Application.Common.Models;
 using Fulfillment.Application.Inventory.Commands.AdjustStock;
 using Fulfillment.Application.Inventory.Commands.CreateInventoryItem;
+using Fulfillment.Application.Inventory.Queries.GetProductStock;
 using Fulfillment.Application.Inventory.Queries.GetStockMovements;
 using Fulfillment.Application.Inventory.Queries.GetWarehouseInventory;
 using Fulfillment.Domain.Enums;
@@ -76,6 +77,16 @@ public class InventoryController : ControllerBase
     => Ok(await _sender.Send(new GetStockMovementsQuery(
         ProductId, warehouseId, inventoryItemId, performedByUserId,
         type, from, to, pageNumber, pageSize), ct));
+    
+    [HttpGet("products/{productId:guid}/stock")]
+    [ProducesResponseType(typeof(PaginatedList<ProductStockDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetProductStock(
+        Guid productId,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken ct = default)
+        => Ok(await _sender.Send(new GetProductStockQuery(productId, pageNumber, pageSize), ct));
 }
 
 public record AdjustStockRequest(int Delta, MovementType Type, string? Reason);

@@ -123,6 +123,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -130,11 +131,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
+if (app.Environment.IsDevelopment())
 {
+    using var scope = app.Services.CreateScope();
     await DataSeeder.SeedAsync(scope.ServiceProvider);
 }
 
 app.Run();
-
-public partial class Program { }

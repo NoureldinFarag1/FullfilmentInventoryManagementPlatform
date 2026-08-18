@@ -30,13 +30,15 @@ public class ExceptionHandlingMiddleware
 
     public async Task HandleAsync(HttpContext context, Exception exception)
     {
+        if (context.Response.HasStarted)
+            throw exception;
+            
         var problem = exception switch
         {
-            ValidationException ve => new ProblemDetails
+            ValidationException ve => (ProblemDetails)new ValidationProblemDetails(ve.Errors)
             {
                 Status = StatusCodes.Status400BadRequest,
-                Title = "Validation failed.",
-                Detail = string.Join("", ve.Errors.SelectMany(e => e.Value)),
+                Title = "Validation failed."
             },
 
             NotFoundException nfe => new ProblemDetails

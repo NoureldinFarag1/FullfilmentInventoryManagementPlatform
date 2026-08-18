@@ -21,13 +21,16 @@ public class PaginatedList<T>
     public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize,
         CancellationToken ct)
     {
+        pageNumber = Math.Max(1, pageNumber);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
         var count = await source.CountAsync(ct);
 
         var items = await source
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(ct);
-        
+
         return new PaginatedList<T>(items, count, pageNumber, pageSize);
     }
     
