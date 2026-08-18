@@ -22,4 +22,10 @@
     <ProjectReference Include="..\Fulfillment.Infrastructure\Fulfillment.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+      <_Parameter1>Fulfillment.Tests</_Parameter1>
+    </AssemblyAttribute>
+  </ItemGroup>
+
 </Project>
