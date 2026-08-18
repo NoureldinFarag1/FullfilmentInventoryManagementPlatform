@@ -45,8 +45,9 @@ public class InventoryController : ControllerBase
     public async Task<IActionResult> AdjustStock(
         Guid id, [FromBody] AdjustStockRequest request, CancellationToken ct)
     {
-        var result = _sender.Send(new AdjustStockCommand(id, request.Delta, request.Type, request.Reason), ct);
-        
+        var result = await _sender.Send(
+            new AdjustStockCommand(id, request.Delta, request.Type, request.Reason), ct);
+
         return Ok(result);
     }
 

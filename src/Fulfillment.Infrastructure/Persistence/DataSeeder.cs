@@ -1,5 +1,7 @@
+using Fulfillment.Domain.Entities;
 using Fulfillment.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fulfillment.Infrastructure.Persistence;
@@ -29,6 +31,41 @@ public static class DataSeeder
         await CreateUserAsync(userManager, "operator@fulfillment.local", "Warehouse Operator", Roles.WareHouseOperator);
         await CreateUserAsync(userManager, "manager@fulfillment.local", "Operations Manager", Roles.Manager);
         await CreateUserAsync(userManager, "sales@fulfillment.local", "Sales Agent", Roles.SalesAgent);
+
+        await SeedCatalogAsync(services.GetRequiredService<FulfillmentDbContext>());
+    }
+
+    private static async Task SeedCatalogAsync(FulfillmentDbContext context)
+    {
+        if (await context.Warehouses.AnyAsync())
+            return;
+
+        var category = new Category
+        {
+            Name = "General",
+            Description = "Default category for seeded products."
+        };
+
+        var product = new Product
+        {
+            Sku = "SKU-001",
+            Name = "Test Widget",
+            Description = "Seeded product for manual testing.",
+            Category = category
+        };
+
+        var warehouse = new Warehouse
+        {
+            Code = "WH-01",
+            Name = "Main Warehouse",
+            Address = "Cairo"
+        };
+
+        context.Categories.Add(category);
+        context.Products.Add(product);
+        context.Warehouses.Add(warehouse);
+
+        await context.SaveChangesAsync();
     }
 
     private static async Task CreateUserAsync(
