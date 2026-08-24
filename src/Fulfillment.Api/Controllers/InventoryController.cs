@@ -1,3 +1,4 @@
+using Fulfillment.Api.Contracts;
 using Fulfillment.Application.Common.Models;
 using Fulfillment.Application.Inventory.Commands.AdjustStock;
 using Fulfillment.Application.Inventory.Commands.CreateInventoryItem;
@@ -52,7 +53,7 @@ public class InventoryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("Warehouses/{warehouseId:guid}/products")]
+    [HttpGet("warehouses/{warehouseId:guid}/products")]
     [ProducesResponseType(typeof(PaginatedList<WarehouseInventoryDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetWarehouseInventory(
         Guid warehouseId, [FromQuery] string? search = null,
@@ -88,5 +89,3 @@ public class InventoryController : ControllerBase
         CancellationToken ct = default)
         => Ok(await _sender.Send(new GetProductStockQuery(productId, pageNumber, pageSize), ct));
 }
-
-public record AdjustStockRequest(int Delta, MovementType Type, string? Reason);

@@ -20,6 +20,8 @@ public class InventoryItemConfiguration : IEntityTypeConfiguration<InventoryItem
         builder.Property(i=>i.Quantity).IsRequired();
         builder.Property(i=>i.RowVersion).IsRowVersion();
         
+        //Conflict -> Table audit / Base Entity audit (JSON) -> Here
+        
         builder.HasOne(i=>i.Product)
             .WithMany(p=>p.InventoryItems)
             .HasForeignKey(i=>i.ProductId)

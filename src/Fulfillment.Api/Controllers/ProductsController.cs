@@ -1,5 +1,7 @@
+using Fulfillment.Api.Contracts;
 using Fulfillment.Application.Common.Models;
 using Fulfillment.Application.Products.Commands.CreateProduct;
+using Fulfillment.Application.Products.Commands.SetProductStatus;
 using Fulfillment.Application.Products.Queries.GetProductById;
 using Fulfillment.Application.Products.Queries.GetProducts;
 using Fulfillment.Infrastructure.Identity;
@@ -45,4 +47,16 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetProductById(Guid id, CancellationToken ct) 
     => Ok(await _sender.Send(new GetProductByIdQuery(id), ct));
+
+    [HttpPatch("{id:guid}/status")]
+    [Authorize(Policy = Policies.CanManageCatalog)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> SetProductStatus(Guid id, [FromBody] SetProductStatusRequest request,
+        CancellationToken ct)
+    {
+        await _sender.Send(new SetProductStatusCommand(id, request.IsActive), ct);
+        return NoContent();
+
+    }
 }

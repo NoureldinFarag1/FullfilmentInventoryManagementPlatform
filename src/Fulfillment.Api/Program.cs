@@ -5,6 +5,7 @@ using Fulfillment.Application;
 using Fulfillment.Application.Common.Interfaces;
 using Fulfillment.Infrastructure.Identity;
 using Fulfillment.Infrastructure.Persistence;
+using Fulfillment.Infrastructure.Persistence.Interceptors;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,9 +14,14 @@ using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("errors.json", optional: false, reloadOnChange: true);
+
 // DbContext
-builder.Services.AddDbContext<FulfillmentDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<FulfillmentDbContext>((sp, options) =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.AddInterceptors(sp.GetRequiredService<AuditableEntityInterceptor>());
+});
 
 // Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
@@ -83,6 +89,9 @@ builder.Services.AddScoped<IIdentityService, IdentityService>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.Configure<ErrorMessageOptions>(options =>
+    builder.Configuration.GetSection(ErrorMessageOptions.SectionName).Bind(options.Messages));
+builder.Services.AddScoped<AuditableEntityInterceptor>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 

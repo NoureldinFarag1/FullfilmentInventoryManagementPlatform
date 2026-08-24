@@ -1,0 +1,32 @@
+{
+  "ErrorMessages": {
+    "Validation": {
+      "Title": "Validation failed."
+    },
+    "NotFound": {
+      "Title": "Resource not found."
+    },
+    "Conflict": {
+      "Title": "Conflict."
+    },
+    "ConcurrencyConflict": {
+      "Title": "Concurrency conflict.",
+      "Detail": "This record was modified by another user. Reload and try again."
+    },
+    "DuplicateRecord": {
+      "Title": "Conflict.",
+      "Detail": "A record with these values already exists."
+    },
+    "BusinessRuleViolation": {
+      "Title": "Business rule violated."
+    },
+    "Unauthorized": {
+      "Title": "Unauthorized.",
+      "Detail": "Authentication is required."
+    },
+    "Unexpected": {
+      "Title": "An unexpected error occurred.",
+      "Detail": "Please contact support if the problem persists."
+    }
+  }
+}

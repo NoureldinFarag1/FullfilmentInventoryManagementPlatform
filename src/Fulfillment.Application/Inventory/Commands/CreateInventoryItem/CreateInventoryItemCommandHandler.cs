@@ -30,7 +30,9 @@ public class CreateInventoryItemCommandHandler
 
         if (!warehouseExists)
             throw new NotFoundException(nameof(Warehouse), request.WarehouseId);
-
+        
+        //Check product status - Activation/Deactivation
+        
         var duplicate = await _context.InventoryItems.AnyAsync(
             i => i.ProductId == request.ProductId && i.WarehouseId == request.WarehouseId,
             cancellationToken);
