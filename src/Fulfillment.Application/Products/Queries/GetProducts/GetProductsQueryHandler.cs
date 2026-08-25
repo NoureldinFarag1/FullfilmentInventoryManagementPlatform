@@ -33,6 +33,12 @@ public class GetProductsQueryHandler
             query = query.Where(p => p.Name.Contains(term) || p.Sku.Contains(term));
         }
 
+        if (request.LowStockOnly == true)
+        {
+            query = query.Where(p=>
+                p.LowStockThreshold != null && p.InventoryItems.Sum(i=>(int?)i.Quantity) <= p.LowStockThreshold);
+        }
+        
         var projected = query
             .OrderBy(p => p.Name)
             .ThenBy(p => p.Id)
@@ -44,7 +50,10 @@ public class GetProductsQueryHandler
                 p.IsActive,
                 p.CategoryId,
                 p.Category != null ? p.Category.Name : null,
-                p.InventoryItems.Sum(i => (int?)i.Quantity) ?? 0));
+                p.InventoryItems.Sum(i => (int?)i.Quantity) ?? 0,
+                p.LowStockThreshold,
+                p.LowStockThreshold != null &&
+                (p.InventoryItems.Sum(i => (int?)i.Quantity) ?? 0) <= p.LowStockThreshold));
 
         return await PaginatedList<ProductDto>.CreateAsync(
             projected, request.PageNumber, request.PageSize, cancellationToken);

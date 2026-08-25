@@ -10,16 +10,21 @@ public class Order : BaseEntity
 
     private Order() { }
 
-    public Order(Guid customerId, Guid warehouseId, string? idempotencyKey = null)
+    public Order(Guid customerId, Guid warehouseId, string referenceNumber, string? notes = null, string? idempotencyKey = null)
     {
         CustomerId = customerId;
         WarehouseId = warehouseId;
+        ReferenceNumber = referenceNumber;
+        Notes = notes;
         IdempotencyKey = idempotencyKey;
         Status = OrderStatus.Draft;
         OrderedAt = DateTime.UtcNow;
         TotalAmount = 0m;
     }
-
+    
+    public string ReferenceNumber { get; private set; } = null!;
+    
+    public string? Notes { get; set; }
     public Guid CustomerId { get; private set; }
     public Customer Customer { get; private set; } = null!;
 

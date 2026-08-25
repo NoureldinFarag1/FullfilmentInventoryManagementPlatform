@@ -107,7 +107,8 @@ builder.Services.AddHttpLogging(o =>
         HttpLoggingFields.ResponseStatusCode |
         HttpLoggingFields.Duration;
 });
-
+builder.Services.AddScoped<IOrderReferenceGenerator, OrderReferenceGenerator>();
+builder.Services.AddHealthChecks().AddDbContextCheck<FulfillmentDbContext>("database");
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -155,6 +156,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 if (app.Environment.IsDevelopment())
 {

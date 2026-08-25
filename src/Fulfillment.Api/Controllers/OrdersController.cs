@@ -6,6 +6,7 @@ using Fulfillment.Application.Orders.Commands.CompleteOrder;
 using Fulfillment.Application.Orders.Commands.ConfirmOrder;
 using Fulfillment.Application.Orders.Commands.CreateOrder;
 using Fulfillment.Application.Orders.Queries.GetOrderById;
+using Fulfillment.Application.Orders.Queries.GetOrderHistory;
 using Fulfillment.Application.Orders.Queries.GetOrders;
 using Fulfillment.Domain.Enums;
 using Fulfillment.Infrastructure.Identity;
@@ -106,4 +107,10 @@ public class OrdersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetOrderById(Guid id, CancellationToken ct)
         => Ok(await _sender.Send(new GetOrderByIdQuery(id), ct));
+    
+    [HttpGet("{id:guid}/history")]
+    [ProducesResponseType(typeof(OrderHistoryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetHistory(Guid id, CancellationToken ct)
+        => Ok(await _sender.Send(new GetOrderHistoryQuery(id), ct));
 }

@@ -7,6 +7,7 @@ public record GetProductsQuery(
     string? Search = null,
     Guid? CategoryId = null,
     bool? IsActive = null,
+    bool? LowStockOnly = null,
     int PageNumber = 1,
     int PageSize = 20) : IRequest<PaginatedList<ProductDto>>;
 
@@ -18,4 +19,6 @@ public record ProductDto(
     bool IsActive,
     Guid? CategoryId,
     string? CategoryName,
-    int TotalQuantity);
+    int TotalQuantity,
+    int? LowStockThreshold,
+    bool? IsLowStock);

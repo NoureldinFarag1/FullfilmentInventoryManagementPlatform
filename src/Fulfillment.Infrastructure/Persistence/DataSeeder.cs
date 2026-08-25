@@ -52,6 +52,7 @@ public static class DataSeeder
             Name = "Test Widget",
             Description = "Seeded product for manual testing.",
             Price = 25.00m,
+            LowStockThreshold = 20,
             Category = category
         };
         
@@ -61,6 +62,7 @@ public static class DataSeeder
             Name = "Test Gadget",
             Description = "Second seeded product.",
             Price = 40.00m,
+            LowStockThreshold = 10,
             Category = category
         };
         
@@ -81,7 +83,7 @@ public static class DataSeeder
         };
 
         context.Categories.Add(category);
-        context.Products.Add(product);
+        context.Products.AddRange(product, secondProduct);
         context.Warehouses.Add(warehouse);
         context.Customers.Add(customer);
 

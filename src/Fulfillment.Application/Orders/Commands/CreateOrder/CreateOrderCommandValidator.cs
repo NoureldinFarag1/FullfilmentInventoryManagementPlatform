@@ -9,5 +9,6 @@ public class CreateOrderCommandValidator : AbstractValidator<CreateOrderCommand>
         RuleFor(x => x.WarehouseId).NotEmpty();
         RuleFor(x => x.CustomerId).NotEmpty();
         RuleFor(x => x.IdempotencyKey).MaximumLength(100);
+        RuleFor(x => x.Notes).MaximumLength(1000);
     }
 }

@@ -18,11 +18,14 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.OrderedAt).IsRequired();
         builder.Property(o => o.IdempotencyKey).HasMaxLength(100);
         builder.Property(o => o.RowVersion).IsRowVersion();
+        builder.Property(o => o.ReferenceNumber).IsRequired().HasMaxLength(20);
+        builder.Property(o=>o.Notes).HasMaxLength(1000);
 
         builder.HasIndex(o => o.Status);
         builder.HasIndex(o => o.OrderedAt);
         builder.HasIndex(o => o.CustomerId);
         builder.HasIndex(o => o.WarehouseId);
+        builder.HasIndex(o => o.ReferenceNumber).IsUnique();
 
         // Filtered unique index: only non-null keys must be unique.
         builder.HasIndex(o => o.IdempotencyKey)

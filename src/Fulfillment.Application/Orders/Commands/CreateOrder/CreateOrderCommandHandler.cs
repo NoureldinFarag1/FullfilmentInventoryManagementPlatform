@@ -9,10 +9,12 @@ namespace Fulfillment.Application.Orders.Commands.CreateOrder;
 public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Guid>
 {
     private readonly IApplicationDbContext _context;
-
-    public CreateOrderCommandHandler(IApplicationDbContext context)
+    private readonly IOrderReferenceGenerator _referenceGenerator;
+    
+    public CreateOrderCommandHandler(IApplicationDbContext context, IOrderReferenceGenerator referenceGenerator)
     {
         _context = context;
+        _referenceGenerator = referenceGenerator;
     }
 
     public async Task<Guid> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
@@ -42,8 +44,10 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
 
         if (!warehouseExists)
             throw new NotFoundException(nameof(Warehouse), request.WarehouseId);
-
-        var order = new Order(request.CustomerId, request.WarehouseId, request.IdempotencyKey);
+        
+        var reference = await _referenceGenerator.NextAsync(cancellationToken);
+        
+        var order = new Order(request.CustomerId, request.WarehouseId,reference, request.Notes?.Trim(),request.IdempotencyKey);
 
         _context.Orders.Add(order);
         await _context.SaveChangesAsync(cancellationToken);

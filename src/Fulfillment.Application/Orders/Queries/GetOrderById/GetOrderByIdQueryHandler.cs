@@ -23,6 +23,7 @@ public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Order
             .Where(o => o.Id == request.Id)
             .Select(o => new OrderDetailDto(
                 o.Id,
+                o.ReferenceNumber,
                 o.CustomerId,
                 o.Customer.Name,
                 o.Customer.Email,
@@ -34,6 +35,7 @@ public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Order
                 o.CompletedAt,
                 o.CancelledAt,
                 o.TotalAmount,
+                o.Notes,
                 o.Items
                     .OrderBy(i => i.ProductName)
                     .Select(i => new OrderItemDto(

@@ -7,6 +7,7 @@ public record GetOrderByIdQuery(Guid Id) : IRequest<OrderDetailDto>;
 
 public record OrderDetailDto(
     Guid Id,
+    string ReferenceNumber,
     Guid CustomerId,
     string CustomerName,
     string CustomerEmail,
@@ -18,6 +19,7 @@ public record OrderDetailDto(
     DateTime? CompletedAt,
     DateTime? CancelledAt,
     decimal TotalAmount,
+    string? Notes,
     IReadOnlyList<OrderItemDto> Items);
 
 public record OrderItemDto(

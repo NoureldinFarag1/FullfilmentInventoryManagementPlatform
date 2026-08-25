@@ -30,7 +30,9 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, P
                 p.IsActive,
                 p.CategoryId,
                 p.Category != null ? p.Category.Name : null,
-                p.InventoryItems.Sum(i => (int?)i.Quantity) ?? 0))
+                p.InventoryItems.Sum(i => (int?)i.Quantity) ?? 0,
+                p.LowStockThreshold,
+                p.LowStockThreshold != null && (p.InventoryItems.Sum(i => (int?)i.Quantity) ?? 0) <= p.LowStockThreshold))
             .FirstOrDefaultAsync(cancellationToken);
 
         return product ?? throw new NotFoundException(nameof(Product), request.Id);

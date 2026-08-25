@@ -36,11 +36,12 @@ public class ProductsController : ControllerBase
     public async Task<IActionResult> GetAllProducts([FromQuery] string? search = null,
         [FromQuery] Guid? categoryId = null,
         [FromQuery] bool? isActive = null,
+        [FromQuery] bool? lowStockOnly = null,
         [FromQuery] int pageNumber = 1,
         [FromQuery] int pageSize = 20,
         CancellationToken ct = default)
         => Ok(await _sender.Send(
-            new GetProductsQuery(search, categoryId, isActive, pageNumber, pageSize), ct));
+            new GetProductsQuery(search, categoryId, isActive, lowStockOnly,pageNumber, pageSize), ct));
     
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]

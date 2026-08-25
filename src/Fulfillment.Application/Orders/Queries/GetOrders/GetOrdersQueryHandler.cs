@@ -51,6 +51,7 @@ public class GetOrdersQueryHandler
         var projected = query.Select(o => new OrderSummaryDto(
             o.Id,
             o.CustomerId,
+            o.ReferenceNumber,
             o.Customer.Name,
             o.WarehouseId,
             o.Warehouse.Code,

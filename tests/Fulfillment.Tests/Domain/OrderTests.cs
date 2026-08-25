@@ -16,7 +16,7 @@ public class OrderTests
         IsActive = true
     };
 
-    private static Order NewOrder() => new(Guid.NewGuid(), Guid.NewGuid());
+    private static Order NewOrder() => new(Guid.NewGuid(), Guid.NewGuid(), "ORD-2026-0001");
 
     private static Order ConfirmedOrder()
     {

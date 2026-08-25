@@ -7,4 +7,5 @@ public record CreateProductCommand(
     string Name,
     string? Description,
     decimal Price,
+    int? LowStockThreshold,
     Guid? CategoryId) : IRequest<Guid>;

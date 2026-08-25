@@ -18,6 +18,7 @@ public record GetOrdersQuery (
 
 public record OrderSummaryDto(Guid Id,
     Guid CustomerId,
+    string ReferenceNumber,
     string CustomerName,
     Guid WarehouseId,
     string WarehouseCode,
