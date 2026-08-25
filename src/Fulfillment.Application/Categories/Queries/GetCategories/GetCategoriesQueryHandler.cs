@@ -31,6 +31,7 @@ public class GetCategoriesQueryHandler
 
         var projected = query
             .OrderBy(c => c.Name)
+            .ThenBy(c => c.Id)
             .Select(c => new CategoryDto(
                 c.Id, c.Name, c.Description, c.IsActive, c.Products.Count));
 

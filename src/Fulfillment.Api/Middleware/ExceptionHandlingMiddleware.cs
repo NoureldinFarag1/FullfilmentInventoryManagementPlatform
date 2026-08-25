@@ -52,9 +52,8 @@ public class ExceptionHandlingMiddleware
 
         problem.Instance = context.Request.Path;
         context.Response.StatusCode = problem.Status!.Value;
-        context.Response.ContentType = "application/problem+json";
 
-        await context.Response.WriteAsJsonAsync(problem, problem.GetType());
+        await context.Response.WriteAsJsonAsync(problem, problem.GetType(), options: null, contentType: "application/problem+json");
     }
 
     private ProblemDetails BuildProblem(Exception exception) => exception switch
@@ -72,7 +71,10 @@ public class ExceptionHandlingMiddleware
 
         BusinessRuleViolationException bre => Problem(
             StatusCodes.Status422UnprocessableEntity, "BusinessRuleViolation", bre.Message),
-
+        
+        InvalidOrderStateException iose => Problem(
+            StatusCodes.Status422UnprocessableEntity, "InvalidOrderState", iose.Message),
+        
         DbUpdateConcurrencyException => Problem(
             StatusCodes.Status409Conflict, "ConcurrencyConflict"),
 

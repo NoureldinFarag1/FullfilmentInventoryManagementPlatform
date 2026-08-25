@@ -12,4 +12,6 @@ public class Product : BaseEntity
     public Guid? CategoryId { get; set; }
     public Category? Category { get; set; }
     public ICollection<InventoryItem> InventoryItems { get; set; } = new HashSet<InventoryItem>();
+    
+    public decimal Price { get; set; }
 }

@@ -7,5 +7,7 @@ public enum MovementType
     Damage = 3,
     Loss = 4,
     CountCorrection = 5,
-    Other = 6
+    Other = 6,
+    OrderAllocation = 7,
+    OrderCancellation = 8,
 }

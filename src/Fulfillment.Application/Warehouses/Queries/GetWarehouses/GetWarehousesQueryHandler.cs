@@ -30,6 +30,7 @@ public class GetWarehousesQueryHandler : IRequestHandler<GetWarehousesQuery,Pagi
 
         var projected = query
             .OrderBy(w => w.Code)
+            .ThenBy(w => w.Id)
             .Select(w => new WarehouseDto(w.Id, w.Code, w.Name, w.Address,w.IsActive));
 
         return await PaginatedList<WarehouseDto>.CreateAsync(

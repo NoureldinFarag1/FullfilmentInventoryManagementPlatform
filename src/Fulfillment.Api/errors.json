@@ -27,6 +27,9 @@
     "Unexpected": {
       "Title": "An unexpected error occurred.",
       "Detail": "Please contact support if the problem persists."
+    },
+    "InvalidOrderState": {
+      "Title": "Invalid order state transition."
     }
   }
 }

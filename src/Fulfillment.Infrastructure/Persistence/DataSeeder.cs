@@ -51,8 +51,27 @@ public static class DataSeeder
             Sku = "SKU-001",
             Name = "Test Widget",
             Description = "Seeded product for manual testing.",
+            Price = 25.00m,
             Category = category
         };
+        
+        var secondProduct = new Product
+        {
+            Sku = "SKU-002",
+            Name = "Test Gadget",
+            Description = "Second seeded product.",
+            Price = 40.00m,
+            Category = category
+        };
+        
+        var customer = new Customer
+        {
+            Name = "Acme Corporation",
+            Email = "orders@acme.example",
+            Phone = "+20 100 000 0000",
+            Address = "Cairo, Egypt"
+        };
+
 
         var warehouse = new Warehouse
         {
@@ -64,6 +83,7 @@ public static class DataSeeder
         context.Categories.Add(category);
         context.Products.Add(product);
         context.Warehouses.Add(warehouse);
+        context.Customers.Add(customer);
 
         await context.SaveChangesAsync();
     }
@@ -98,6 +118,7 @@ public static class DataSeeder
             throw new InvalidOperationException(
                 $"Failed to assign role '{role}' to '{email}': {Describe(assigned)}");
     }
+    
 
     private static string Describe(IdentityResult result) =>
         string.Join("; ", result.Errors.Select(e => e.Description));

@@ -38,6 +38,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
             Sku = sku,
             Name = request.Name.Trim(),
             Description = request.Description?.Trim(),
+            Price = request.Price,
             CategoryId = request.CategoryId
         };
 

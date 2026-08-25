@@ -30,6 +30,7 @@ public class GetProductStockQueryHandler
             .AsNoTracking()
             .Where(i => i.ProductId == request.ProductId)
             .OrderBy(i => i.Warehouse.Code)
+            .ThenBy(i=>i.Product.Id)
             .Select(i => new ProductStockDto(
                 i.Id,
                 i.WarehouseId,

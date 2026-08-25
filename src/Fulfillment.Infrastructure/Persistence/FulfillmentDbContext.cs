@@ -18,6 +18,9 @@ public class FulfillmentDbContext : IdentityDbContext<ApplicationUser, IdentityR
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
     public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
     public DbSet<StockMovement> StockMovements => Set<StockMovement>();
+    public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

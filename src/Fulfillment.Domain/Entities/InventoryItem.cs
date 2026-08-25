@@ -66,6 +66,8 @@ public class InventoryItem : BaseEntity
         MovementType.Loss => delta < 0,
         MovementType.CountCorrection => true,
         MovementType.Other => true,
+        MovementType.OrderAllocation => delta < 0,
+        MovementType.OrderCancellation => delta > 0,
         _ => false
     };
 }

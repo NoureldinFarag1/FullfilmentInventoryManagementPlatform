@@ -7,6 +7,7 @@ using Fulfillment.Infrastructure.Identity;
 using Fulfillment.Infrastructure.Persistence;
 using Fulfillment.Infrastructure.Persistence.Interceptors;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -76,6 +77,12 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy(Policies.CanAdjustStock, policy =>
         policy.RequireRole(Roles.Administrator, Roles.WareHouseOperator));
+    
+    options.AddPolicy(Policies.CanManageOrders, policy =>
+        policy.RequireRole(Roles.Administrator, Roles.SalesAgent));
+
+    options.AddPolicy(Policies.CanProcessOrders, policy =>
+        policy.RequireRole(Roles.Administrator, Roles.WareHouseOperator));
 });
 
 // Application services
@@ -92,6 +99,15 @@ builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 builder.Services.Configure<ErrorMessageOptions>(options =>
     builder.Configuration.GetSection(ErrorMessageOptions.SectionName).Bind(options.Messages));
 builder.Services.AddScoped<AuditableEntityInterceptor>();
+builder.Services.AddHttpLogging(o =>
+{
+    o.LoggingFields =
+        HttpLoggingFields.RequestMethod |
+        HttpLoggingFields.RequestPath |
+        HttpLoggingFields.ResponseStatusCode |
+        HttpLoggingFields.Duration;
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 

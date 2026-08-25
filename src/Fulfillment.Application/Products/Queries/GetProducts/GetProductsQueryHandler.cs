@@ -35,6 +35,7 @@ public class GetProductsQueryHandler
 
         var projected = query
             .OrderBy(p => p.Name)
+            .ThenBy(p => p.Id)
             .Select(p => new ProductDto(
                 p.Id,
                 p.Sku,
