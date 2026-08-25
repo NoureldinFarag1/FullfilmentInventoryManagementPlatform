@@ -43,11 +43,9 @@ public class GetOrderHistoryQueryHandler : IRequestHandler<GetOrderHistoryQuery,
                 order.CreatedByUserId)
         };
         
-        var reference = $"Order {order.Id}";
-
         var movements = await _context.StockMovements
             .AsNoTracking()
-            .Where(m => m.Reason != null && m.Reason.Contains(order.Id.ToString()))
+            .Where(m => m.OrderId == order.Id)
             .OrderBy(m => m.OccuredAt)
             .Select(m => new
             {

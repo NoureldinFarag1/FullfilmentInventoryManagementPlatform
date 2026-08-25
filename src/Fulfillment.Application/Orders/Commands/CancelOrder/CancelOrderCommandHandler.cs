@@ -52,7 +52,8 @@ public class CancelOrderCommandHandler : IRequestHandler<CancelOrderCommand>
                     line.Quantity,
                     MovementType.OrderCancellation,
                     request.Reason ?? $"Cancellation of order {order.Id}",
-                    userId);
+                    userId,
+                    order.Id);
 
                 _context.StockMovements.Add(movement);
             }

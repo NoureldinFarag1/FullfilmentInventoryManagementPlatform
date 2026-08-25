@@ -55,7 +55,8 @@ public class ConfirmOrderCommandHandler : IRequestHandler<ConfirmOrderCommand>
                 -line.Quantity,
                 MovementType.OrderAllocation,
                 $"Order {order.Id}",
-                userId);
+                userId,
+                order.Id);
 
             _context.StockMovements.Add(movement);
         }

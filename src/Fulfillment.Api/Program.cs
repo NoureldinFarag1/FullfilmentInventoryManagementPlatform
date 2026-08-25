@@ -141,6 +141,10 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+// Outside the exception middleware, so the status it writes is the one logged.
+if (app.Environment.IsDevelopment())
+    app.UseHttpLogging();
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())

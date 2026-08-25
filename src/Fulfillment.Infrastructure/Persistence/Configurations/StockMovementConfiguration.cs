@@ -20,14 +20,23 @@ public class StockMovementConfiguration : IEntityTypeConfiguration<StockMovement
         builder.Property(m=>m.Reason).HasMaxLength(500);
         builder.Property(m=>m.Type).HasConversion<int>().IsRequired();
         builder.Property(m => m.OccuredAt).IsRequired();
-        
+        builder.Property(m => m.OrderId);
+
         builder.HasIndex(m=> new {m.InventoryItemId, m.OccuredAt});
         builder.HasIndex(m => m.OccuredAt);
         builder.HasIndex(m => m.PerformedByUserId);
-        
+        builder.HasIndex(m => m.OrderId);
+
         builder.HasOne<ApplicationUser>()
             .WithMany()
             .HasForeignKey(m=>m.PerformedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // No navigation back from Order: the movement log is read on its own
+        // terms, same reasoning as PerformedByUserId above.
+        builder.HasOne<Order>()
+            .WithMany()
+            .HasForeignKey(m => m.OrderId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Fulfillment.Application.Common.Exceptions;
 using Fulfillment.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -51,6 +52,7 @@ public class ExceptionHandlingMiddleware
             _logger.LogWarning(exception, "Database conflict on {Path}", context.Request.Path);
 
         problem.Instance = context.Request.Path;
+        problem.Extensions["traceId"] = Activity.Current?.Id ?? context.TraceIdentifier;
         context.Response.StatusCode = problem.Status!.Value;
 
         await context.Response.WriteAsJsonAsync(problem, problem.GetType(), options: null, contentType: "application/problem+json");

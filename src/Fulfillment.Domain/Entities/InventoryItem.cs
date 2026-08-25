@@ -27,7 +27,8 @@ public class InventoryItem : BaseEntity
 
     public IReadOnlyCollection<StockMovement> Movements => _movements.AsReadOnly();
 
-    public StockMovement ApplyAdjustment(int delta, MovementType type, string? reason, Guid performedByUserId)
+    public StockMovement ApplyAdjustment(
+        int delta, MovementType type, string? reason, Guid performedByUserId, Guid? orderId = null)
     {
         if (delta == 0)
             throw new BusinessRuleViolationException("A stock adjustment must change the quantity.");
@@ -52,7 +53,7 @@ public class InventoryItem : BaseEntity
 
         Quantity = newQuantity;
 
-        var movement = new StockMovement(Id, delta, newQuantity, type, reason, performedByUserId);
+        var movement = new StockMovement(Id, delta, newQuantity, type, reason, performedByUserId, orderId);
         _movements.Add(movement);
 
         return movement;
