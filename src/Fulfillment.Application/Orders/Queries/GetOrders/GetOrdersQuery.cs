@@ -5,6 +5,7 @@ using MediatR;
 namespace Fulfillment.Application.Orders.Queries.GetOrders;
 
 public record GetOrdersQuery (
+    string? Search = null,
     OrderStatus? Status = null,
     Guid? CustomerId = null,
     Guid? WarehouseId = null,

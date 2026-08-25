@@ -35,7 +35,17 @@ public class GetOrdersQueryHandler
 
         if (request.To is not null)
             query = query.Where(o => o.OrderedAt <= request.To);
+        
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            var term = request.Search.Trim();
 
+            query = query.Where(o =>
+                o.Customer.Name.Contains(term) ||
+                o.Customer.Email.Contains(term) ||
+                o.Items.Any(i => i.ProductSku.Contains(term) || i.ProductName.Contains(term)));
+        }
+        
         query = ApplySort(query, request.SortBy, request.SortDescending);
 
         var projected = query.Select(o => new OrderSummaryDto(

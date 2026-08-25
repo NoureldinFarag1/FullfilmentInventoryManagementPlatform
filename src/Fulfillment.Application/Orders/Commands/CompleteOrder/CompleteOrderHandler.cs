@@ -3,16 +3,19 @@ using Fulfillment.Application.Common.Interfaces;
 using Fulfillment.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Fulfillment.Application.Orders.Commands.CompleteOrder;
 
 public class CompleteOrderCommandHandler : IRequestHandler<CompleteOrderCommand>
 {
     private readonly IApplicationDbContext _context;
+    private readonly ILogger<CompleteOrderCommandHandler> _logger;
 
-    public CompleteOrderCommandHandler(IApplicationDbContext context)
+    public CompleteOrderCommandHandler(IApplicationDbContext context, ILogger<CompleteOrderCommandHandler> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task Handle(CompleteOrderCommand request, CancellationToken cancellationToken)
@@ -26,5 +29,7 @@ public class CompleteOrderCommandHandler : IRequestHandler<CompleteOrderCommand>
         order.Complete();
 
         await _context.SaveChangesAsync(cancellationToken);
+        
+        _logger.LogInformation("Order {OrderId} completed successfully", order.Id);
     }
 }

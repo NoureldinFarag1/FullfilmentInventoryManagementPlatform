@@ -4,6 +4,7 @@ using Fulfillment.Domain.Entities;
 using Fulfillment.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Fulfillment.Application.Orders.Commands.CancelOrder;
 
@@ -11,11 +12,13 @@ public class CancelOrderCommandHandler : IRequestHandler<CancelOrderCommand>
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUser _currentUser;
+    private readonly ILogger<CancelOrderCommandHandler> _logger;
 
-    public CancelOrderCommandHandler(IApplicationDbContext context, ICurrentUser currentUser)
+    public CancelOrderCommandHandler(IApplicationDbContext context, ICurrentUser currentUser, ILogger<CancelOrderCommandHandler> logger)
     {
         _context = context;
         _currentUser = currentUser;
+        _logger = logger;
     }
 
     public async Task Handle(CancelOrderCommand request, CancellationToken cancellationToken)
@@ -56,5 +59,8 @@ public class CancelOrderCommandHandler : IRequestHandler<CancelOrderCommand>
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+        
+        _logger.LogInformation("Order {OrderId} cancelled by {UserId}. Stock restored: {StockRestored}.",
+            order.Id, userId, stockMustBeRestored);
     }
 }

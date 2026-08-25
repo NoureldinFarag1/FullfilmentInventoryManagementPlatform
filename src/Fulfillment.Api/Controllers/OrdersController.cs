@@ -85,7 +85,8 @@ public class OrdersController : ControllerBase
 
     [HttpGet]
     [ProducesResponseType(typeof(PaginatedList<OrderSummaryDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll(
+    public async Task<IActionResult> GetAllOrders(
+        [FromQuery] string? search = null,
         [FromQuery] OrderStatus? status = null,
         [FromQuery] Guid? customerId = null,
         [FromQuery] Guid? warehouseId = null,
@@ -97,12 +98,12 @@ public class OrdersController : ControllerBase
         [FromQuery] int pageSize = 20,
         CancellationToken ct = default)
         => Ok(await _sender.Send(new GetOrdersQuery(
-            status, customerId, warehouseId, from, to,
+            search, status, customerId, warehouseId, from, to,
             sortBy, sortDescending, pageNumber, pageSize), ct));
 
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(OrderDetailDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
+    public async Task<IActionResult> GetOrderById(Guid id, CancellationToken ct)
         => Ok(await _sender.Send(new GetOrderByIdQuery(id), ct));
 }
