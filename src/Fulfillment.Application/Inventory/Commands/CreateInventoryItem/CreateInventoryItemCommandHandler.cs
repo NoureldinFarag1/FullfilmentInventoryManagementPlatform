@@ -19,20 +19,25 @@ public class CreateInventoryItemCommandHandler
     public async Task<Guid> Handle(
         CreateInventoryItemCommand request, CancellationToken cancellationToken)
     {
-        var productExists = await _context.Products
-            .AnyAsync(p => p.Id == request.ProductId, cancellationToken);
+        var productIsActive = await _context.Products
+            .Where(p => p.Id == request.ProductId)
+            .Select(p => (bool?)p.IsActive)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        if (!productExists)
+        if (productIsActive is null)
             throw new NotFoundException(nameof(Product), request.ProductId);
+
+        if (productIsActive == false)
+            throw new ConflictException(
+                "This product is deactivated and cannot be stocked.");
 
         var warehouseExists = await _context.Warehouses
             .AnyAsync(w => w.Id == request.WarehouseId, cancellationToken);
 
         if (!warehouseExists)
             throw new NotFoundException(nameof(Warehouse), request.WarehouseId);
-        
-        //Check product status - Activation/Deactivation
-        
+
+
         var duplicate = await _context.InventoryItems.AnyAsync(
             i => i.ProductId == request.ProductId && i.WarehouseId == request.WarehouseId,
             cancellationToken);

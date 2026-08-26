@@ -42,23 +42,31 @@ public class GetOperationsSummaryQueryHandler : IRequestHandler<GetOperationsSum
             .Where(o => o.Status == OrderStatus.Confirmed || o.Status == OrderStatus.Completed)
             .SelectMany(o => o.Items)
             .GroupBy(i => new { i.ProductSku, i.ProductName })
-            .Select(g => new TopProductDto(
+            .Select(g => new
+            {
                 g.Key.ProductSku,
                 g.Key.ProductName,
-                g.Sum(i => i.Quantity),
-                g.Sum(i => i.UnitPrice * i.Quantity)))
+                UnitsOrdered = g.Sum(i => i.Quantity),
+                Revenue = g.Sum(i => i.UnitPrice * i.Quantity)
+            })
+            // Ordered on the anonymous projection: EF cannot translate an
+            // OrderBy over a constructed DTO's members.
             .OrderByDescending(p => p.UnitsOrdered)
             .Take(5)
             .ToListAsync(cancellationToken);
 
+        var topProductDtos = topProducts
+            .Select(p => new TopProductDto(p.ProductSku, p.ProductName, p.UnitsOrdered, p.Revenue))
+            .ToList();
+
         var stockByWarehouse = await _context.Warehouses
             .AsNoTracking()
+            .OrderBy(w => w.Code)
             .Select(w => new WarehouseStockDto(
                 w.Code,
                 w.Name,
                 w.InventoryItems.Sum(i => (int?)i.Quantity) ?? 0,
                 w.InventoryItems.Count))
-            .OrderBy(w => w.WarehouseCode)
             .ToListAsync(cancellationToken);
 
         var lowStockCount = await _context.Products
@@ -77,7 +85,7 @@ public class GetOperationsSummaryQueryHandler : IRequestHandler<GetOperationsSum
                 .Select(s => new OrdersByStatusDto(s.Status.ToString(), s.Count, s.Value))
                 .OrderBy(s => s.Status)
                 .ToList(),
-            topProducts,
+            topProductDtos,
             stockByWarehouse,
             lowStockCount);
     }

@@ -118,6 +118,147 @@ public class InventoryItemTests
     }
 
     [Fact]
+    public void AdjustmentToExactlyZero_IsAllowed()
+    {
+        var item = CreateItemWithStock(10);
+
+        var movement = item.ApplyAdjustment(-10, MovementType.Issue, null, _userId);
+
+        item.Quantity.Should().Be(0);
+        movement.QuantityAfter.Should().Be(0);
+    }
+
+    [Fact]
+    public void AdjustmentOneUnitPastZero_IsRejected()
+    {
+        var item = CreateItemWithStock(10);
+
+        var act = () => item.ApplyAdjustment(-11, MovementType.Issue, null, _userId);
+
+        act.Should().Throw<BusinessRuleViolationException>()
+            .WithMessage("*cannot go below zero*");
+        item.Quantity.Should().Be(10);
+    }
+
+    [Theory]
+    [InlineData(MovementType.Receipt, 5)]
+    [InlineData(MovementType.Issue, -5)]
+    [InlineData(MovementType.Damage, -5)]
+    [InlineData(MovementType.Loss, -5)]
+    [InlineData(MovementType.CountCorrection, 5)]
+    [InlineData(MovementType.CountCorrection, -5)]
+    [InlineData(MovementType.OrderAllocation, -5)]
+    [InlineData(MovementType.OrderCancellation, 5)]
+    public void EveryMovementType_AcceptsItsAllowedDirection(MovementType type, int delta)
+    {
+        var item = CreateItemWithStock(100);
+
+        var movement = item.ApplyAdjustment(delta, type, null, _userId);
+
+        movement.Type.Should().Be(type);
+        item.Quantity.Should().Be(100 + delta);
+    }
+
+    [Theory]
+    [InlineData(MovementType.Receipt, -5)]
+    [InlineData(MovementType.Issue, 5)]
+    [InlineData(MovementType.Damage, 5)]
+    [InlineData(MovementType.Loss, 5)]
+    [InlineData(MovementType.OrderAllocation, 5)]
+    [InlineData(MovementType.OrderCancellation, -5)]
+    public void EveryDirectionalMovementType_RejectsTheWrongDirection(MovementType type, int delta)
+    {
+        var item = CreateItemWithStock(100);
+
+        var act = () => item.ApplyAdjustment(delta, type, null, _userId);
+
+        act.Should().Throw<BusinessRuleViolationException>()
+            .WithMessage("*must*stock*");
+        item.Quantity.Should().Be(100);
+    }
+
+    [Theory]
+    [InlineData(5)]
+    [InlineData(-5)]
+    public void OtherMovementType_WithReason_AllowsBothDirections(int delta)
+    {
+        var item = CreateItemWithStock(100);
+
+        var movement = item.ApplyAdjustment(delta, MovementType.Other, "Stocktake fix", _userId);
+
+        movement.Reason.Should().Be("Stocktake fix");
+        item.Quantity.Should().Be(100 + delta);
+    }
+
+    [Fact]
+    public void CountCorrection_NeedsNoReason_UnlikeOther()
+    {
+        var item = CreateItemWithStock(10);
+
+        var movement = item.ApplyAdjustment(-4, MovementType.CountCorrection, null, _userId);
+
+        movement.Reason.Should().BeNull();
+        item.Quantity.Should().Be(6);
+    }
+
+    [Fact]
+    public void WhitespaceOnlyReason_IsStoredAsNull()
+    {
+        var item = CreateItem();
+
+        var movement = item.ApplyAdjustment(5, MovementType.Receipt, "   ", _userId);
+
+        movement.Reason.Should().BeNull();
+    }
+
+    [Fact]
+    public void Reason_IsTrimmed()
+    {
+        var item = CreateItem();
+
+        var movement = item.ApplyAdjustment(5, MovementType.Receipt, "  Delivery 42  ", _userId);
+
+        movement.Reason.Should().Be("Delivery 42");
+    }
+
+    [Fact]
+    public void SequentialAdjustments_RecordTheRunningTotalOnEachMovement()
+    {
+        var item = CreateItem();
+
+        item.ApplyAdjustment(10, MovementType.Receipt, null, _userId);
+        item.ApplyAdjustment(-4, MovementType.Issue, null, _userId);
+        item.ApplyAdjustment(7, MovementType.Receipt, null, _userId);
+        item.ApplyAdjustment(-13, MovementType.Issue, null, _userId);
+
+        item.Quantity.Should().Be(0);
+        item.Movements.Select(m => m.QuantityAfter).Should().Equal(10, 6, 13, 0);
+        item.Movements.Select(m => m.Delta).Should().Equal(10, -4, 7, -13);
+    }
+
+    [Fact]
+    public void Adjustment_RecordsNoOrderId_WhenNoneSupplied()
+    {
+        var item = CreateItem();
+
+        var movement = item.ApplyAdjustment(5, MovementType.Receipt, null, _userId);
+
+        movement.OrderId.Should().BeNull();
+    }
+
+    [Fact]
+    public void Adjustment_RecordsTheOrderId_WhenSupplied()
+    {
+        var item = CreateItemWithStock(10);
+        var orderId = Guid.NewGuid();
+
+        var movement = item.ApplyAdjustment(
+            -3, MovementType.OrderAllocation, "Order allocation", _userId, orderId);
+
+        movement.OrderId.Should().Be(orderId);
+    }
+
+    [Fact]
     public void MovementHistory_IsAppendOnly_AndCannotBeMutatedExternally()
     {
         var item = CreateItem();

@@ -35,7 +35,11 @@ public class OrdersController : ControllerBase
         CancellationToken ct)
     {
         var id = await _sender.Send(
-            new CreateOrderCommand(request.CustomerId, request.WarehouseId, idempotencyKey), ct);
+            new CreateOrderCommand(
+                request.CustomerId,
+                request.WarehouseId,
+                Notes: request.Notes,
+                IdempotencyKey: idempotencyKey), ct);
 
         return StatusCode(StatusCodes.Status201Created, new { id });
     }
